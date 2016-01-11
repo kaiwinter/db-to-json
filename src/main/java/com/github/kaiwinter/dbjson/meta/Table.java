@@ -1,9 +1,9 @@
-package com.github;
+package com.github.kaiwinter.dbjson.meta;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.github.database.DatabaseWrapper;
+import com.github.kaiwinter.dbjson.database.DatabaseWrapper;
 import com.google.gson.stream.JsonWriter;
 
 public class Table {

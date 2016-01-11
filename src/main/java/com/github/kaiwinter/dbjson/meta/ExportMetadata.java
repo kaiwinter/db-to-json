@@ -1,11 +1,12 @@
-package com.github;
+package com.github.kaiwinter.dbjson.meta;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.database.DatabaseWrapper;
+import com.github.kaiwinter.dbjson.config.ExportConfig;
+import com.github.kaiwinter.dbjson.database.DatabaseWrapper;
 
 public class ExportMetadata {
 

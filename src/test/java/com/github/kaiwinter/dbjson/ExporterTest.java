@@ -1,4 +1,4 @@
-package com.github;
+package com.github.kaiwinter.dbjson;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +13,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.kaiwinter.dbjson.config.ExportConfig;
+import com.github.kaiwinter.dbjson.meta.ExportMetadata;
+import com.github.kaiwinter.dbjson.meta.Table;
 import com.google.gson.stream.JsonWriter;
 
 public class ExporterTest {

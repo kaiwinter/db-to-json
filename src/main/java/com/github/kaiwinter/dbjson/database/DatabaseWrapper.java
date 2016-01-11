@@ -1,4 +1,4 @@
-package com.github.database;
+package com.github.kaiwinter.dbjson.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,8 +13,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.ExportConfig;
-import com.github.Table;
+import com.github.kaiwinter.dbjson.config.ExportConfig;
+import com.github.kaiwinter.dbjson.meta.Table;
 
 public class DatabaseWrapper {
 

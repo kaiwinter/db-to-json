@@ -1,3 +1,4 @@
+package com.github.kaiwinter.dbjson;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -10,9 +11,9 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import com.github.ExportConfig;
-import com.github.ExportMetadata;
-import com.github.Table;
+import com.github.kaiwinter.dbjson.config.ExportConfig;
+import com.github.kaiwinter.dbjson.meta.ExportMetadata;
+import com.github.kaiwinter.dbjson.meta.Table;
 import com.google.gson.stream.JsonWriter;
 
 public class Main {
