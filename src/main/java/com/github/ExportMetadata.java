@@ -1,7 +1,6 @@
 package com.github;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,17 +18,14 @@ public class ExportMetadata {
 
     public ExportMetadata(ExportConfig config) throws SQLException {
         this.config = config;
-        tables = new HashSet<>();
 
-        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user,
-                config.password)) {
-            DatabaseMetaData metaData = connection.getMetaData();
+        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
+                ResultSet resultTables = connection.getMetaData().getTables(null, null, null, null);) {
 
-            try (ResultSet resultTables = metaData.getTables(null, null, null, null)) {
-                while (resultTables.next()) {
-                    String tablename = resultTables.getString("TABLE_NAME");
-                    tables.add(new Table(this, tablename));
-                }
+            tables = new HashSet<>();
+            while (resultTables.next()) {
+                String tablename = resultTables.getString("TABLE_NAME");
+                tables.add(new Table(this, tablename));
             }
 
         }
@@ -73,27 +69,25 @@ public class ExportMetadata {
      * @throws SQLException
      */
     public List<Object[]> getQueryResult() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user,
-                config.password)) {
+        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
+                PreparedStatement preparedStatement = connection.prepareStatement(config.query);
+                ResultSet resultSet = preparedStatement.executeQuery();) {
 
             List<Object[]> tableContent = new ArrayList<>();
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(config.query);
-                    ResultSet resultSet = preparedStatement.executeQuery();) {
-                int columnCount = resultSet.getMetaData().getColumnCount();
-                Object[] header = new Object[columnCount];
-                for (int i = 0; i < columnCount; i++) {
-                    header[i] = resultSet.getMetaData().getColumnLabel(i + 1);
-                }
-                tableContent.add(header);
+            int columnCount = resultSet.getMetaData().getColumnCount();
+            Object[] header = new Object[columnCount];
+            for (int i = 0; i < columnCount; i++) {
+                header[i] = resultSet.getMetaData().getColumnLabel(i + 1);
+            }
+            tableContent.add(header);
 
-                while (resultSet.next()) {
-                    Object[] data = new Object[columnCount];
-                    for (int i = 0; i < columnCount; i++) {
-                        data[i] = resultSet.getObject(i + 1);
-                    }
-                    tableContent.add(data);
+            while (resultSet.next()) {
+                Object[] data = new Object[columnCount];
+                for (int i = 0; i < columnCount; i++) {
+                    data[i] = resultSet.getObject(i + 1);
                 }
+                tableContent.add(data);
             }
 
             return tableContent;

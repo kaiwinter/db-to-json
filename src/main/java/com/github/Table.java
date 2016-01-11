@@ -20,6 +20,22 @@ public class Table {
         this.tablename = tablename;
     }
 
+    public List<String> getColumnNames() throws SQLException {
+        ExportConfig config = exportMetadata.getConfig();
+        List<String> columns = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
+                ResultSet resultColumns = connection.getMetaData().getColumns(null, null, tablename, null)) {
+
+            while (resultColumns.next()) {
+                System.out.println();
+                String columnname = resultColumns.getString("COLUMN_NAME");
+                columns.add(columnname);
+            }
+        }
+
+        return columns;
+    }
+
     /**
      * Returns all rows from the table. The first element in the list contains the column headers.
      * 
@@ -28,29 +44,26 @@ public class Table {
      */
     public List<Object[]> getContent() throws SQLException {
         ExportConfig config = exportMetadata.getConfig();
-        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user,
-                config.password)) {
+        String query = "SELECT * FROM " + tablename;
+        List<Object[]> tableContent = new ArrayList<>();
 
-            String query = "SELECT * FROM " + tablename;
+        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                ResultSet resultSet = preparedStatement.executeQuery();) {
 
-            List<Object[]> tableContent = new ArrayList<>();
+            int columnCount = resultSet.getMetaData().getColumnCount();
+            Object[] header = new Object[columnCount];
+            for (int i = 0; i < columnCount; i++) {
+                header[i] = resultSet.getMetaData().getColumnLabel(i + 1);
+            }
+            tableContent.add(header);
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                    ResultSet resultSet = preparedStatement.executeQuery();) {
-                int columnCount = resultSet.getMetaData().getColumnCount();
-                Object[] header = new Object[columnCount];
+            while (resultSet.next()) {
+                Object[] data = new Object[columnCount];
                 for (int i = 0; i < columnCount; i++) {
-                    header[i] = resultSet.getMetaData().getColumnLabel(i + 1);
+                    data[i] = resultSet.getObject(i + 1);
                 }
-                tableContent.add(header);
-
-                while (resultSet.next()) {
-                    Object[] data = new Object[columnCount];
-                    for (int i = 0; i < columnCount; i++) {
-                        data[i] = resultSet.getObject(i + 1);
-                    }
-                    tableContent.add(data);
-                }
+                tableContent.add(data);
             }
 
             return tableContent;

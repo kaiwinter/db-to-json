@@ -103,31 +103,43 @@ public class ExporterTest {
                 "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
                 stringWriter.getBuffer().toString());
     }
-    
-     @Test
-     public void testSqliteQueryResultSingleColumn() throws SQLException {
-         ExportConfig config = ExportConfig
-                 .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
 
-         ExportMetadata metadata = new ExportMetadata(config);
-         List<Object[]> queryResult = metadata.getQueryResult();
-         Assert.assertEquals(2, queryResult.size());
-         Assert.assertEquals(1, queryResult.iterator().next().length);
-         Assert.assertEquals("id", queryResult.get(0)[0]);
-         Assert.assertEquals(1, queryResult.get(1)[0]);
-     }
-     
-     @Test
-     public void testSqliteQueryResultTwoColumnsTwoRows() throws SQLException {
-         ExportConfig config = ExportConfig
-                 .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config-multiplecolumnquery.json")));
+    @Test
+    public void testSqliteQueryResultSingleColumn() throws SQLException {
+        ExportConfig config = ExportConfig
+                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
 
-         ExportMetadata metadata = new ExportMetadata(config);
-         List<Object[]> queryResult = metadata.getQueryResult();
-         Assert.assertEquals(3, queryResult.size());
-         Assert.assertEquals(1, queryResult.iterator().next().length);
-         Assert.assertEquals("username", queryResult.get(0)[0]);
-         Assert.assertEquals("User A", queryResult.get(1)[0]);
-         Assert.assertEquals("User B", queryResult.get(2)[0]);
-     }
+        ExportMetadata metadata = new ExportMetadata(config);
+        List<Object[]> queryResult = metadata.getQueryResult();
+        Assert.assertEquals(2, queryResult.size());
+        Assert.assertEquals(1, queryResult.iterator().next().length);
+        Assert.assertEquals("id", queryResult.get(0)[0]);
+        Assert.assertEquals(1, queryResult.get(1)[0]);
+    }
+
+    @Test
+    public void testSqliteQueryResultTwoColumnsTwoRows() throws SQLException {
+        ExportConfig config = ExportConfig.fromFile(new InputStreamReader(
+                ExporterTest.class.getResourceAsStream("sqlite/config-multiplecolumnquery.json")));
+
+        ExportMetadata metadata = new ExportMetadata(config);
+        List<Object[]> queryResult = metadata.getQueryResult();
+        Assert.assertEquals(3, queryResult.size());
+        Assert.assertEquals(1, queryResult.iterator().next().length);
+        Assert.assertEquals("username", queryResult.get(0)[0]);
+        Assert.assertEquals("User A", queryResult.get(1)[0]);
+        Assert.assertEquals("User B", queryResult.get(2)[0]);
+    }
+
+    @Test
+    public void testSqliteMetadataTableColumns() throws SQLException {
+        ExportConfig config = ExportConfig
+                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+
+        ExportMetadata metadata = new ExportMetadata(config);
+        Table table = metadata.getTable("user");
+        List<String> columnNames = table.getColumnNames();
+        Assert.assertEquals("id", columnNames.get(0));
+        Assert.assertEquals("username", columnNames.get(1));
+    }
 }
