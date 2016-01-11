@@ -3,15 +3,15 @@ package com.github.kaiwinter.dbjson.meta;
 import java.io.IOException;
 import java.util.List;
 
-import com.github.kaiwinter.dbjson.database.DatabaseWrapper;
+import com.github.kaiwinter.dbjson.database.DatabaseDAO;
 import com.google.gson.stream.JsonWriter;
 
-public class Table {
+public final class Table {
 
     private final String tablename;
-    private final DatabaseWrapper database;
+    private final DatabaseDAO database;
 
-    public Table(DatabaseWrapper databaseWrapper, String tablename) {
+    public Table(DatabaseDAO databaseWrapper, String tablename) {
         this.database = databaseWrapper;
         this.tablename = tablename;
     }

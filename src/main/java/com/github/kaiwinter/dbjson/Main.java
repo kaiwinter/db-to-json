@@ -11,12 +11,12 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import com.github.kaiwinter.dbjson.config.ExportConfig;
-import com.github.kaiwinter.dbjson.meta.ExportMetadata;
+import com.github.kaiwinter.dbjson.config.Config;
+import com.github.kaiwinter.dbjson.meta.Database;
 import com.github.kaiwinter.dbjson.meta.Table;
 import com.google.gson.stream.JsonWriter;
 
-public class Main {
+public final class Main {
 
     public static void main(String[] args) throws IOException {
         CommandLineArgs commandLineArgs = parseCommandLineArgs(args);
@@ -57,8 +57,8 @@ public class Main {
 
             writer = new JsonWriter(new PrintWriter(outputStream));
 
-            ExportConfig config = ExportConfig.fromFile(fileReader);
-            ExportMetadata metadata = new ExportMetadata(config);
+            Config config = Config.fromFile(fileReader);
+            Database metadata = new Database(config);
             writer.beginArray();
             for (Table table : metadata.getTables()) {
                 table.export(writer, true);

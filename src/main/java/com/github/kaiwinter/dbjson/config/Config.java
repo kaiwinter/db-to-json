@@ -5,26 +5,19 @@ import java.io.Reader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public final class ExportConfig {
+public final class Config {
     public String jdbcDriver;
     public String connectionString;
     public String user;
     public String password;
     public String query;
 
-    private ExportConfig() {
+    private Config() {
         // use fromFile
     }
     
-    public static ExportConfig fromFile(Reader reader) {
+    public static Config fromFile(Reader reader) {
         Gson gson = new GsonBuilder().create();
-        return gson.fromJson(reader, ExportConfig.class);
+        return gson.fromJson(reader, Config.class);
     }
-
-    @Override
-    public String toString() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
-    }
-
 }

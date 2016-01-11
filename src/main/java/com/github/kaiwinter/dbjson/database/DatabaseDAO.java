@@ -13,16 +13,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.kaiwinter.dbjson.config.ExportConfig;
+import com.github.kaiwinter.dbjson.config.Config;
 import com.github.kaiwinter.dbjson.meta.Table;
 
-public class DatabaseWrapper {
+public final class DatabaseDAO {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseWrapper.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseDAO.class.getSimpleName());
 
-    private final ExportConfig config;
+    private final Config config;
 
-    public DatabaseWrapper(ExportConfig config) {
+    public DatabaseDAO(Config config) {
         this.config = config;
     }
 

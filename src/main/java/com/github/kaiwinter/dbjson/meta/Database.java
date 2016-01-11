@@ -5,16 +5,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.kaiwinter.dbjson.config.ExportConfig;
-import com.github.kaiwinter.dbjson.database.DatabaseWrapper;
+import com.github.kaiwinter.dbjson.config.Config;
+import com.github.kaiwinter.dbjson.database.DatabaseDAO;
 
-public class ExportMetadata {
+public final class Database {
 
-    private final DatabaseWrapper database;
+    private final DatabaseDAO database;
     private final Collection<Table> tables;
 
-    public ExportMetadata(ExportConfig config) {
-        this.database = new DatabaseWrapper(config);
+    /**
+     * Constructs a new {@link Database} and loads the table metadata from the database.
+     * 
+     * @param config
+     */
+    public Database(Config config) {
+        this.database = new DatabaseDAO(config);
         this.tables = this.database.getTables();
     }
 
@@ -26,11 +31,11 @@ public class ExportMetadata {
     }
 
     /**
-     * Convenience method
+     * Convenience method to get a {@link Table} from the list of tables.
      * 
      * @param tablename
      *            the table's name, not <code>null</code>
-     * @return
+     * @return the {@link Table} object, or <code>null</code>
      */
     public Table getTable(String tablename) {
         Objects.requireNonNull(tablename, "tablename must not be null");
