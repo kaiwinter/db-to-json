@@ -10,18 +10,23 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.ExportConfig;
 import com.github.Table;
 
 public class DatabaseWrapper {
 
-    private ExportConfig config;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseWrapper.class.getSimpleName());
+
+    private final ExportConfig config;
 
     public DatabaseWrapper(ExportConfig config) {
         this.config = config;
     }
 
-    public Collection<Table> getTables() throws SQLException {
+    public Collection<Table> getTables() {
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
                 ResultSet resultTables = connection.getMetaData().getTables(null, null, null, null);) {
             Collection<Table> tables = new HashSet<>();
@@ -30,10 +35,13 @@ public class DatabaseWrapper {
                 tables.add(new Table(this, tablename));
             }
             return tables;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 
-    public List<String> getColumnNames(String tablename) throws SQLException {
+    public List<String> getColumnNames(String tablename) {
         List<String> columns = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
                 ResultSet resultColumns = connection.getMetaData().getColumns(null, null, tablename, null)) {
@@ -43,6 +51,9 @@ public class DatabaseWrapper {
                 String columnname = resultColumns.getString("COLUMN_NAME");
                 columns.add(columnname);
             }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
 
         return columns;
@@ -52,9 +63,8 @@ public class DatabaseWrapper {
      * Returns all rows from the table. The first element in the list contains the column headers.
      * 
      * @return
-     * @throws SQLException
      */
-    public List<Object[]> getContent(String tablename) throws SQLException {
+    public List<Object[]> getContent(String tablename) {
         String query = "SELECT * FROM " + tablename;
         return getQueryResultIntern(query);
     }
@@ -63,13 +73,12 @@ public class DatabaseWrapper {
      * Returns the resulting rows from the query. The first element in the list contains the column headers.
      * 
      * @return the result of the query which was defined in the config.json.
-     * @throws SQLException
      */
-    public List<Object[]> getQueryResult() throws SQLException {
+    public List<Object[]> getQueryResult() {
         return getQueryResultIntern(config.query);
     }
 
-    private List<Object[]> getQueryResultIntern(String query) throws SQLException {
+    private List<Object[]> getQueryResultIntern(String query) {
         List<Object[]> tableContent = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
@@ -92,6 +101,9 @@ public class DatabaseWrapper {
             }
 
             return tableContent;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 }

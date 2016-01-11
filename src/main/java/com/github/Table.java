@@ -1,13 +1,13 @@
 package com.github;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import com.github.database.DatabaseWrapper;
 import com.google.gson.stream.JsonWriter;
 
 public class Table {
+
     private final String tablename;
     private final DatabaseWrapper database;
 
@@ -16,7 +16,7 @@ public class Table {
         this.tablename = tablename;
     }
 
-    public List<String> getColumnNames() throws SQLException {
+    public List<String> getColumnNames() {
         return database.getColumnNames(tablename);
     }
 
@@ -24,17 +24,16 @@ public class Table {
      * Returns all rows from the table. The first element in the list contains the column headers.
      * 
      * @return
-     * @throws SQLException
      */
-    public List<Object[]> getContent() throws SQLException {
+    public List<Object[]> getContent() {
         return database.getContent(tablename);
     }
 
-    public void export(JsonWriter writer) throws SQLException, IOException {
+    public void export(JsonWriter writer) throws IOException {
         export(writer, false);
     }
 
-    public void export(JsonWriter writer, boolean pretty) throws SQLException, IOException {
+    public void export(JsonWriter writer, boolean pretty) throws IOException {
         if (pretty) {
             writer.setIndent("    ");
         }

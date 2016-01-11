@@ -1,6 +1,5 @@
 package com.github;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +12,7 @@ public class ExportMetadata {
     private final DatabaseWrapper database;
     private final Collection<Table> tables;
 
-    public ExportMetadata(ExportConfig config) throws SQLException {
+    public ExportMetadata(ExportConfig config) {
         this.database = new DatabaseWrapper(config);
         this.tables = this.database.getTables();
     }
@@ -47,9 +46,8 @@ public class ExportMetadata {
      * Returns the resulting rows from the query. The first element in the list contains the column headers.
      * 
      * @return the result of the query which was defined in the config.json.
-     * @throws SQLException
      */
-    public List<Object[]> getQueryResult() throws SQLException {
+    public List<Object[]> getQueryResult() {
         return database.getQueryResult();
     }
 }
