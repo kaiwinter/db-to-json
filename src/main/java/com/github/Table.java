@@ -1,39 +1,23 @@
 package com.github;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import com.github.database.DatabaseWrapper;
 import com.google.gson.stream.JsonWriter;
 
 public class Table {
-    private final ExportMetadata exportMetadata;
     private final String tablename;
+    private final DatabaseWrapper database;
 
-    public Table(ExportMetadata exportMetadata, String tablename) {
-        this.exportMetadata = exportMetadata;
+    public Table(DatabaseWrapper databaseWrapper, String tablename) {
+        this.database = databaseWrapper;
         this.tablename = tablename;
     }
 
     public List<String> getColumnNames() throws SQLException {
-        ExportConfig config = exportMetadata.getConfig();
-        List<String> columns = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
-                ResultSet resultColumns = connection.getMetaData().getColumns(null, null, tablename, null)) {
-
-            while (resultColumns.next()) {
-                System.out.println();
-                String columnname = resultColumns.getString("COLUMN_NAME");
-                columns.add(columnname);
-            }
-        }
-
-        return columns;
+        return database.getColumnNames(tablename);
     }
 
     /**
@@ -43,31 +27,7 @@ public class Table {
      * @throws SQLException
      */
     public List<Object[]> getContent() throws SQLException {
-        ExportConfig config = exportMetadata.getConfig();
-        String query = "SELECT * FROM " + tablename;
-        List<Object[]> tableContent = new ArrayList<>();
-
-        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                ResultSet resultSet = preparedStatement.executeQuery();) {
-
-            int columnCount = resultSet.getMetaData().getColumnCount();
-            Object[] header = new Object[columnCount];
-            for (int i = 0; i < columnCount; i++) {
-                header[i] = resultSet.getMetaData().getColumnLabel(i + 1);
-            }
-            tableContent.add(header);
-
-            while (resultSet.next()) {
-                Object[] data = new Object[columnCount];
-                for (int i = 0; i < columnCount; i++) {
-                    data[i] = resultSet.getObject(i + 1);
-                }
-                tableContent.add(data);
-            }
-
-            return tableContent;
-        }
+        return database.getContent(tablename);
     }
 
     public void export(JsonWriter writer) throws SQLException, IOException {
