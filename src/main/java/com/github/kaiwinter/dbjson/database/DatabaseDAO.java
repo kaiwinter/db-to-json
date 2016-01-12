@@ -6,8 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -26,14 +26,25 @@ public final class DatabaseDAO {
         this.config = config;
     }
 
-    public Collection<Table> getTables() {
+    /**
+     * @return all Tables in the database sorted by table name
+     */
+    public List<Table> getTables() {
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
                 ResultSet resultTables = connection.getMetaData().getTables(null, null, null, null);) {
-            Collection<Table> tables = new HashSet<>();
+            List<Table> tables = new ArrayList<>();
             while (resultTables.next()) {
                 String tablename = resultTables.getString("TABLE_NAME");
                 tables.add(new Table(this, tablename));
             }
+
+            Collections.sort(tables, new Comparator<Table>() {
+
+                @Override
+                public int compare(Table o1, Table o2) {
+                    return o2.getTablename().compareTo(o1.getTablename());
+                }
+            });
             return tables;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
