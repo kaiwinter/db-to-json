@@ -1,9 +1,7 @@
 package com.github.kaiwinter.dbjson;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,10 +19,9 @@ import com.google.gson.stream.JsonWriter;
 public class ExporterTest {
 
     @Test
-    public void testSqliteMetadataTables() throws SQLException {
+    public void testSqliteMetadataTables() {
 
-        Config config = Config
-                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
         Collection<Table> tables = metadata.getTables();
         Assert.assertEquals(2, tables.size());
@@ -41,13 +38,12 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteData() throws SQLException {
-        Config config = Config
-                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+    public void testSqliteData() {
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
 
         Table table = metadata.getTable("user");
-        List<Object[]> tableContent = table.getContent();
+        List<Object[]> tableContent = table.getAllWithHeader();
         Assert.assertEquals(3, tableContent.size());
 
         Assert.assertEquals("id", tableContent.get(0)[0]);
@@ -61,9 +57,8 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteWriteJsonOne() throws SQLException, IOException {
-        Config config = Config
-                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+    public void testSqliteWriteJsonOne() throws IOException {
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
 
@@ -78,9 +73,8 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteWriteJsonMultiple() throws SQLException, IOException {
-        Config config = Config
-                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+    public void testSqliteWriteJsonMultiple() throws IOException {
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
 
@@ -108,9 +102,8 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteQueryResultSingleColumn() throws SQLException {
-        Config config = Config
-                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+    public void testSqliteQueryResultSingleColumn() {
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
         List<Object[]> queryResult = metadata.getQueryResult();
@@ -121,9 +114,9 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteQueryResultTwoColumnsTwoRows() throws SQLException {
-        Config config = Config.fromFile(new InputStreamReader(
-                ExporterTest.class.getResourceAsStream("sqlite/config-multiplecolumnquery.json")));
+    public void testSqliteQueryResultTwoColumnsTwoRows() {
+        Config config = Config
+                .fromFile(ExporterTest.class.getResourceAsStream("sqlite/config-multiplecolumnquery.json"));
 
         Database metadata = new Database(config);
         List<Object[]> queryResult = metadata.getQueryResult();
@@ -135,9 +128,8 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteMetadataTableColumns() throws SQLException {
-        Config config = Config
-                .fromFile(new InputStreamReader(ExporterTest.class.getResourceAsStream("sqlite/config.json")));
+    public void testSqliteMetadataTableColumns() {
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
         Table table = metadata.getTable("user");

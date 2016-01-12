@@ -54,6 +54,6 @@ public final class Database {
      * @return the result of the query which was defined in the config.json.
      */
     public List<Object[]> getQueryResult() {
-        return database.getQueryResult();
+        return database.getQueryResultWithHeader();
     }
 }

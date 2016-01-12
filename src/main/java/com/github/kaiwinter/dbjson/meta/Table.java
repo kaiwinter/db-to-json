@@ -25,8 +25,8 @@ public final class Table {
      * 
      * @return
      */
-    public List<Object[]> getContent() {
-        return database.getContent(tablename);
+    public List<Object[]> getAllWithHeader() {
+        return database.getAllWithHeader(tablename);
     }
 
     public void export(JsonWriter writer) throws IOException {
@@ -38,7 +38,7 @@ public final class Table {
             writer.setIndent("    ");
         }
 
-        List<Object[]> tableContent = getContent();
+        List<Object[]> tableContent = getAllWithHeader();
         Object[] header = tableContent.get(0);
 
         writer.beginObject();

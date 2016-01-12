@@ -1,9 +1,7 @@
 package com.github.kaiwinter.dbjson;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.IOUtils;
@@ -46,19 +44,16 @@ public final class Main {
         }
 
         JsonWriter writer = null;
-        try (FileReader fileReader = new FileReader(file)) {
-
-            OutputStream outputStream;
+        try {
             if (commandLineArgs.outfile == null) {
-                outputStream = System.out;
+                writer = new JsonWriter(new PrintWriter(System.out));
             } else {
-                outputStream = new FileOutputStream(commandLineArgs.outfile);
+                writer = new JsonWriter(new PrintWriter(new FileOutputStream(commandLineArgs.outfile)));
             }
 
-            writer = new JsonWriter(new PrintWriter(outputStream));
-
-            Config config = Config.fromFile(fileReader);
+            Config config = Config.fromFile(file);
             Database metadata = new Database(config);
+
             writer.beginArray();
             for (Table table : metadata.getTables()) {
                 table.export(writer, true);

@@ -64,7 +64,7 @@ public final class DatabaseDAO {
      * 
      * @return
      */
-    public List<Object[]> getContent(String tablename) {
+    public List<Object[]> getAllWithHeader(String tablename) {
         String query = "SELECT * FROM " + tablename;
         return getQueryResultIntern(query);
     }
@@ -74,7 +74,7 @@ public final class DatabaseDAO {
      * 
      * @return the result of the query which was defined in the config.json.
      */
-    public List<Object[]> getQueryResult() {
+    public List<Object[]> getQueryResultWithHeader() {
         return getQueryResultIntern(config.query);
     }
 
