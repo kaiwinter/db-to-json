@@ -1,11 +1,10 @@
 package com.github.kaiwinter.dbjson;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -57,15 +56,14 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteWriteJsonOne() throws IOException {
+    public void testSqliteWriteJsonOneTable() throws IOException {
         Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
-
+        Table table = metadata.getTable("invoice");
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter writer = new JsonWriter(stringWriter)) {
-            Table table = metadata.getTable("invoice");
-            table.export(writer);
+            table.exportAllRows(writer);
         }
 
         Assert.assertEquals("{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}",
@@ -73,7 +71,21 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteWriteJsonMultiple() throws IOException {
+    public void testSqliteWriteJsonAllTables() throws IOException {
+        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
+
+        Database metadata = new Database(config);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        metadata.exportAllTables(stream);
+
+        Assert.assertEquals(
+                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
+                stream.toString());
+    }
+
+    @Test
+    public void testSqliteWriteJsonAllTablesManually() throws IOException {
         Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
@@ -82,16 +94,8 @@ public class ExporterTest {
         try (JsonWriter writer = new JsonWriter(stringWriter)) {
             writer.beginArray();
             List<Table> tables = new ArrayList<>(metadata.getTables());
-            // Sort for a stable test result
-            Collections.sort(tables, new Comparator<Table>() {
-
-                @Override
-                public int compare(Table o1, Table o2) {
-                    return o2.getTablename().compareTo(o1.getTablename());
-                }
-            });
             for (Table table : tables) {
-                table.export(writer);
+                table.exportAllRows(writer);
             }
             writer.endArray();
         }

@@ -29,11 +29,11 @@ public final class Table {
         return database.getAllWithHeader(tablename);
     }
 
-    public void export(JsonWriter writer) throws IOException {
-        export(writer, false);
+    public void exportAllRows(JsonWriter writer) throws IOException {
+        exportAllRows(writer, false);
     }
 
-    public void export(JsonWriter writer, boolean pretty) throws IOException {
+    public void exportAllRows(JsonWriter writer, boolean pretty) throws IOException {
         if (pretty) {
             writer.setIndent("    ");
         }

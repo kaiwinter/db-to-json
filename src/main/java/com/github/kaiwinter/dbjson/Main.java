@@ -1,18 +1,14 @@
 package com.github.kaiwinter.dbjson;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import com.github.kaiwinter.dbjson.config.Config;
 import com.github.kaiwinter.dbjson.meta.Database;
-import com.github.kaiwinter.dbjson.meta.Table;
-import com.google.gson.stream.JsonWriter;
 
 public final class Main {
 
@@ -43,25 +39,18 @@ public final class Main {
             throw new IllegalArgumentException("Config cannot be opened: " + file.getAbsolutePath());
         }
 
-        JsonWriter writer = null;
-        try {
-            if (commandLineArgs.outfile == null) {
-                writer = new JsonWriter(new PrintWriter(System.out));
-            } else {
-                writer = new JsonWriter(new PrintWriter(new FileOutputStream(commandLineArgs.outfile)));
-            }
+        // TODO KW: check if query is set in config. If set then export the result query else export all tables
 
-            Config config = Config.fromFile(file);
-            Database metadata = new Database(config);
-
-            writer.beginArray();
-            for (Table table : metadata.getTables()) {
-                table.export(writer, true);
-            }
-            writer.endArray();
-        } finally {
-            IOUtils.closeQuietly(writer);
+        PrintStream stream;
+        if (commandLineArgs.outfile == null) {
+            stream = System.out;
+        } else {
+            stream = new PrintStream(commandLineArgs.outfile);
         }
+
+        Config config = Config.fromFile(file);
+        Database metadata = new Database(config);
+        metadata.exportAllTables(stream);
     }
 
     private static class CommandLineArgs {
