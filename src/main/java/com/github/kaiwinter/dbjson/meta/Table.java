@@ -4,32 +4,33 @@ import java.io.IOException;
 import java.util.List;
 
 import com.github.kaiwinter.dbjson.database.DatabaseDAO;
+import com.github.kaiwinter.dbjson.database.QueryResult;
 import com.github.kaiwinter.dbjson.json.JsonExporter;
 import com.google.gson.stream.JsonWriter;
 
 public final class Table {
 
     private final String tablename;
-    private final DatabaseDAO database;
+    private final DatabaseDAO databaseDAO;
     private final JsonExporter json;
 
-    public Table(DatabaseDAO databaseWrapper, String tablename) {
-        this.database = databaseWrapper;
+    public Table(DatabaseDAO databaseDAO, String tablename) {
+        this.databaseDAO = databaseDAO;
         this.tablename = tablename;
         this.json = new JsonExporter();
     }
 
-    public List<String> getColumnNames() {
-        return database.getColumnNames(tablename);
+    public List<String> getColumnLabels() {
+        return databaseDAO.getColumnLabels(tablename);
     }
 
     /**
-     * Returns all rows from the table. The first element in the list contains the column headers.
+     * Returns all rows from the table.
      * 
      * @return
      */
-    public List<Object[]> getAllWithHeader() {
-        return database.getAllWithHeader(tablename);
+    public QueryResult getTableData() {
+        return databaseDAO.getTableData(tablename);
     }
 
     public void exportAllRows(JsonWriter writer) throws IOException {
@@ -41,8 +42,8 @@ public final class Table {
             writer.setIndent("    ");
         }
 
-        List<Object[]> headerAndtableContent = getAllWithHeader();
-        json.writeList(writer, headerAndtableContent, tablename);
+        QueryResult queryResult = getTableData();
+        json.writeList(writer, queryResult, tablename);
     }
 
     /**

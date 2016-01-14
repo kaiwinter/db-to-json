@@ -27,7 +27,7 @@ public final class DatabaseDAO {
     }
 
     /**
-     * @return all Tables in the database sorted by table name
+     * @return all tables in the database sorted by table name
      */
     public List<Table> getTables() {
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
@@ -52,7 +52,7 @@ public final class DatabaseDAO {
         }
     }
 
-    public List<String> getColumnNames(String tablename) {
+    public List<String> getColumnLabels(String tablename) {
         List<String> columns = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
                 ResultSet resultColumns = connection.getMetaData().getColumns(null, null, tablename, null)) {
@@ -71,47 +71,44 @@ public final class DatabaseDAO {
     }
 
     /**
-     * Returns all rows from the table. The first element in the list contains the column headers.
-     * 
-     * @return
+     * @return all rows from the table
      */
-    public List<Object[]> getAllWithHeader(String tablename) {
+    public QueryResult getTableData(String tablename) {
         String query = "SELECT * FROM " + tablename;
         return getQueryResultIntern(query);
     }
 
     /**
-     * Returns the resulting rows from the query. The first element in the list contains the column headers.
+     * Returns the resulting rows from the query.
      * 
      * @return the result of the query which was defined in the config.json.
      */
-    public List<Object[]> getQueryResultWithHeader() {
+    public QueryResult getQueryResult() {
         return getQueryResultIntern(config.query);
     }
 
-    private List<Object[]> getQueryResultIntern(String query) {
-        List<Object[]> tableContent = new ArrayList<>();
+    private QueryResult getQueryResultIntern(String query) {
+        QueryResult queryResult = new QueryResult();
 
         try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 ResultSet resultSet = preparedStatement.executeQuery();) {
 
             int columnCount = resultSet.getMetaData().getColumnCount();
-            Object[] header = new Object[columnCount];
             for (int i = 0; i < columnCount; i++) {
-                header[i] = resultSet.getMetaData().getColumnLabel(i + 1);
+                String columnLabel = resultSet.getMetaData().getColumnLabel(i + 1);
+                queryResult.columnLabels.add(columnLabel);
             }
-            tableContent.add(header);
 
             while (resultSet.next()) {
                 Object[] data = new Object[columnCount];
                 for (int i = 0; i < columnCount; i++) {
                     data[i] = resultSet.getObject(i + 1);
                 }
-                tableContent.add(data);
+                queryResult.data.add(data);
             }
 
-            return tableContent;
+            return queryResult;
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(e);

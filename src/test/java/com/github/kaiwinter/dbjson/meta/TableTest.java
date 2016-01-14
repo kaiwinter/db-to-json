@@ -10,8 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.kaiwinter.dbjson.config.Config;
-import com.github.kaiwinter.dbjson.meta.Database;
-import com.github.kaiwinter.dbjson.meta.Table;
+import com.github.kaiwinter.dbjson.database.QueryResult;
 import com.google.gson.stream.JsonWriter;
 
 public final class TableTest {
@@ -41,17 +40,18 @@ public final class TableTest {
         Database metadata = new Database(config);
         Table table = metadata.getTable("user");
 
-        List<Object[]> tableContent = table.getAllWithHeader();
-        Assert.assertEquals(3, tableContent.size());
+        QueryResult tableContent = table.getTableData();
+        Assert.assertEquals(2, tableContent.columnLabels.size());
+        Assert.assertEquals(2, tableContent.data.size());
 
-        Assert.assertEquals("id", tableContent.get(0)[0]);
-        Assert.assertEquals("username", tableContent.get(0)[1]);
+        Assert.assertEquals("id", tableContent.columnLabels.get(0));
+        Assert.assertEquals("username", tableContent.columnLabels.get(1));
 
-        Assert.assertEquals(1, tableContent.get(1)[0]);
-        Assert.assertEquals("User A", tableContent.get(1)[1]);
+        Assert.assertEquals(1, tableContent.data.get(0)[0]);
+        Assert.assertEquals("User A", tableContent.data.get(0)[1]);
 
-        Assert.assertEquals(2, tableContent.get(2)[0]);
-        Assert.assertEquals("User B", tableContent.get(2)[1]);
+        Assert.assertEquals(2, tableContent.data.get(1)[0]);
+        Assert.assertEquals("User B", tableContent.data.get(1)[1]);
     }
 
     @Test
@@ -95,7 +95,7 @@ public final class TableTest {
         Database metadata = new Database(config);
         Table table = metadata.getTable("user");
 
-        List<String> columnNames = table.getColumnNames();
+        List<String> columnNames = table.getColumnLabels();
         Assert.assertEquals("id", columnNames.get(0));
         Assert.assertEquals("username", columnNames.get(1));
     }

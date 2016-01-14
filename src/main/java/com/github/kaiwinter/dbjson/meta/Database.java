@@ -5,11 +5,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import com.github.kaiwinter.dbjson.config.Config;
 import com.github.kaiwinter.dbjson.database.DatabaseDAO;
+import com.github.kaiwinter.dbjson.database.QueryResult;
 import com.github.kaiwinter.dbjson.json.JsonExporter;
 import com.google.gson.stream.JsonWriter;
 
@@ -57,18 +57,11 @@ public final class Database {
         return null;
     }
 
-    /**
-     * Returns the resulting rows from the query. The first element in the list contains the column headers.
-     * 
-     * @return the result of the query which was defined in the config.json.
-     * @throws IOException
-     */
     public void exportQueryResult(OutputStream stream) throws IOException {
-
-        List<Object[]> queryResultWithHeader = databaseDAO.getQueryResultWithHeader();
+        QueryResult queryResult = databaseDAO.getQueryResult();
 
         try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
-            json.writeList(writer, queryResultWithHeader, config.query);
+            json.writeList(writer, queryResult, config.query);
         }
     }
 
