@@ -1,6 +1,6 @@
 {
     "jdbcDriver": "org.sqlite.JDBC",
-    "connectionString": "jdbc:sqlite:target/test-classes/com/github/kaiwinter/dbjson/sqlite/test-sqlite.db",
+    "connectionString": "jdbc:sqlite:target/test-classes/com/github/kaiwinter/dbjson/meta/sqlite/test-sqlite.db",
     "user": "root",
     "password": "",
     "query": "SELECT username FROM user WHERE id<10"

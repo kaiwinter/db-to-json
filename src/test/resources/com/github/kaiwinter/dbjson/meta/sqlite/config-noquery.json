@@ -1,0 +1,7 @@
+{
+    "jdbcDriver": "org.sqlite.JDBC",
+    "connectionString": "jdbc:sqlite:target/test-classes/com/github/kaiwinter/dbjson/meta/sqlite/test-sqlite.db",
+    "user": "root",
+    "password": "",
+    "query": ""
+}

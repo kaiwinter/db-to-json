@@ -1,8 +1,6 @@
-package com.github.kaiwinter.dbjson;
+package com.github.kaiwinter.dbjson.meta;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,14 +14,14 @@ import com.github.kaiwinter.dbjson.meta.Database;
 import com.github.kaiwinter.dbjson.meta.Table;
 import com.google.gson.stream.JsonWriter;
 
-public class ExporterTest {
+public final class TableTest {
 
     @Test
     public void testSqliteMetadataTables() {
-
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
+        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
         Collection<Table> tables = metadata.getTables();
+
         Assert.assertEquals(2, tables.size());
 
         int matches = 0;
@@ -39,10 +37,10 @@ public class ExporterTest {
 
     @Test
     public void testSqliteData() {
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
+        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
-
         Table table = metadata.getTable("user");
+
         List<Object[]> tableContent = table.getAllWithHeader();
         Assert.assertEquals(3, tableContent.size());
 
@@ -58,10 +56,10 @@ public class ExporterTest {
 
     @Test
     public void testSqliteWriteJsonOneTable() throws IOException {
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
-
+        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
         Table table = metadata.getTable("invoice");
+
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter writer = new JsonWriter(stringWriter)) {
             table.exportAllRows(writer);
@@ -72,23 +70,8 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteWriteJsonAllTables() throws IOException {
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
-
-        Database metadata = new Database(config);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        metadata.exportAllTables(stream);
-
-        Assert.assertEquals(
-                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
-                stream.toString());
-    }
-
-    @Test
     public void testSqliteWriteJsonAllTablesManually() throws IOException {
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
-
+        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
 
         StringWriter stringWriter = new StringWriter();
@@ -107,32 +90,11 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteQueryResultSingleColumn() throws IOException {
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
-
-        Database metadata = new Database(config);
-        OutputStream stream = new ByteArrayOutputStream();
-        metadata.exportQueryResult(stream);
-        Assert.assertEquals("{\"SELECT id FROM user WHERE id=1\":[{\"id\":1}]}", stream.toString());
-    }
-
-    @Test
-    public void testSqliteQueryResultTwoColumnsTwoRows() throws IOException {
-        Config config = Config
-                .fromFile(ExporterTest.class.getResourceAsStream("sqlite/config-multiplecolumnquery.json"));
-
-        Database metadata = new Database(config);
-        OutputStream stream = new ByteArrayOutputStream();
-        metadata.exportQueryResult(stream);
-        Assert.assertEquals("{\"SELECT username FROM user WHERE id<10\":[{\"username\":\"User A\"},{\"username\":\"User B\"}]}", stream.toString());
-    }
-
-    @Test
     public void testSqliteMetadataTableColumns() {
-        Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
-
+        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config.json"));
         Database metadata = new Database(config);
         Table table = metadata.getTable("user");
+
         List<String> columnNames = table.getColumnNames();
         Assert.assertEquals("id", columnNames.get(0));
         Assert.assertEquals("username", columnNames.get(1));

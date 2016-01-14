@@ -13,10 +13,14 @@ import com.github.kaiwinter.dbjson.meta.Database;
 
 public final class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         CommandLineArgs commandLineArgs = parseCommandLineArgs(args);
         if (commandLineArgs != null) {
-            start(commandLineArgs);
+            try {
+                start(commandLineArgs);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -44,9 +48,9 @@ public final class Main {
         Database metadata = new Database(config);
 
         if (isQuerySetInConfig(config)) {
-            exportAllTables(metadata, commandLineArgs.outfile);
-        } else {
             exportQueryResult(metadata, commandLineArgs.outfile);
+        } else {
+            exportAllTables(metadata, commandLineArgs.outfile);
         }
     }
 
