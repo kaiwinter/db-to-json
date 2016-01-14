@@ -2,6 +2,7 @@ package com.github.kaiwinter.dbjson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,29 +107,24 @@ public class ExporterTest {
     }
 
     @Test
-    public void testSqliteQueryResultSingleColumn() {
+    public void testSqliteQueryResultSingleColumn() throws IOException {
         Config config = Config.fromFile(ExporterTest.class.getResourceAsStream("sqlite/config.json"));
 
         Database metadata = new Database(config);
-        List<Object[]> queryResult = metadata.getQueryResult();
-        Assert.assertEquals(2, queryResult.size());
-        Assert.assertEquals(1, queryResult.iterator().next().length);
-        Assert.assertEquals("id", queryResult.get(0)[0]);
-        Assert.assertEquals(1, queryResult.get(1)[0]);
+        OutputStream stream = new ByteArrayOutputStream();
+        metadata.exportQueryResult(stream);
+        Assert.assertEquals("{\"SELECT id FROM user WHERE id=1\":[{\"id\":1}]}", stream.toString());
     }
 
     @Test
-    public void testSqliteQueryResultTwoColumnsTwoRows() {
+    public void testSqliteQueryResultTwoColumnsTwoRows() throws IOException {
         Config config = Config
                 .fromFile(ExporterTest.class.getResourceAsStream("sqlite/config-multiplecolumnquery.json"));
 
         Database metadata = new Database(config);
-        List<Object[]> queryResult = metadata.getQueryResult();
-        Assert.assertEquals(3, queryResult.size());
-        Assert.assertEquals(1, queryResult.iterator().next().length);
-        Assert.assertEquals("username", queryResult.get(0)[0]);
-        Assert.assertEquals("User A", queryResult.get(1)[0]);
-        Assert.assertEquals("User B", queryResult.get(2)[0]);
+        OutputStream stream = new ByteArrayOutputStream();
+        metadata.exportQueryResult(stream);
+        Assert.assertEquals("{\"SELECT username FROM user WHERE id<10\":[{\"username\":\"User A\"},{\"username\":\"User B\"}]}", stream.toString());
     }
 
     @Test

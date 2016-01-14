@@ -14,6 +14,7 @@ import com.google.gson.stream.JsonWriter;
 
 public final class Database {
 
+    private final Config config;
     private final DatabaseDAO database;
     private final Collection<Table> tables;
 
@@ -23,6 +24,7 @@ public final class Database {
      * @param config
      */
     public Database(Config config) {
+        this.config = config;
         this.database = new DatabaseDAO(config);
         this.tables = this.database.getTables();
     }
@@ -56,9 +58,42 @@ public final class Database {
      * Returns the resulting rows from the query. The first element in the list contains the column headers.
      * 
      * @return the result of the query which was defined in the config.json.
+     * @throws IOException
      */
-    public List<Object[]> getQueryResult() {
-        return database.getQueryResultWithHeader();
+    public void exportQueryResult(OutputStream stream) throws IOException {
+
+        List<Object[]> queryResultWithHeader = database.getQueryResultWithHeader();
+
+        // FIXME KW: combine with Table.export
+        try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
+            Object[] header = queryResultWithHeader.get(0);
+
+            writer.beginObject();
+            writer.name(config.query);
+
+            writer.beginArray();
+
+            for (int row = 1; row < queryResultWithHeader.size(); row++) {
+                writer.beginObject();
+                Object[] rowData = queryResultWithHeader.get(row);
+                for (int column = 0; column < rowData.length; column++) {
+                    Object columnValue = rowData[column];
+                    if (columnValue == null) {
+                        writer.name((String) header[column]).nullValue();
+                    } else if (columnValue instanceof String) {
+                        writer.name((String) header[column]).value((String) columnValue);
+                    } else if (columnValue instanceof Number) {
+                        writer.name((String) header[column]).value((Number) columnValue);
+                    } else {
+                        throw new IllegalArgumentException("Unknown type: " + columnValue.getClass());
+                    }
+                }
+                writer.endObject();
+            }
+
+            writer.endArray();
+            writer.endObject();
+        }
     }
 
     /**
@@ -77,7 +112,6 @@ public final class Database {
      * @throws IOException
      */
     public void exportAllTables(OutputStream stream, boolean pretty) throws IOException {
-
         try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
             writer.beginArray();
             for (Table table : getTables()) {

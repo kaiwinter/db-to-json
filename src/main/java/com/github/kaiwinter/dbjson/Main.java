@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -41,20 +40,29 @@ public final class Main {
             throw new IllegalArgumentException("Config cannot be opened: " + file.getAbsolutePath());
         }
 
-        // TODO KW: check if query is set in config. If set then export the result query else export all tables
-        OutputStream stream = null;
-        try {
-            if (commandLineArgs.outfile == null) {
-                stream = System.out;
-            } else {
-                stream = new PrintStream(commandLineArgs.outfile);
-            }
+        Config config = Config.fromFile(file);
+        Database metadata = new Database(config);
 
-            Config config = Config.fromFile(file);
-            Database metadata = new Database(config);
+        if (isQuerySetInConfig(config)) {
+            exportAllTables(metadata, commandLineArgs.outfile);
+        } else {
+            exportQueryResult(metadata, commandLineArgs.outfile);
+        }
+    }
+
+    private static boolean isQuerySetInConfig(Config config) {
+        return config.query != null && !config.query.isEmpty();
+    }
+
+    private static void exportAllTables(Database metadata, String outfile) throws IOException {
+        try (OutputStream stream = (outfile == null) ? System.out : new PrintStream(outfile)) {
             metadata.exportAllTables(stream);
-        } finally {
-            IOUtils.closeQuietly(stream);
+        }
+    }
+
+    private static void exportQueryResult(Database metadata, String outfile) throws IOException {
+        try (OutputStream stream = (outfile == null) ? System.out : new PrintStream(outfile)) {
+            metadata.exportQueryResult(stream);
         }
     }
 
