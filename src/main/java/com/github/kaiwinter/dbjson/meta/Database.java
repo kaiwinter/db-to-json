@@ -10,13 +10,15 @@ import java.util.Objects;
 
 import com.github.kaiwinter.dbjson.config.Config;
 import com.github.kaiwinter.dbjson.database.DatabaseDAO;
+import com.github.kaiwinter.dbjson.json.JsonExporter;
 import com.google.gson.stream.JsonWriter;
 
 public final class Database {
 
     private final Config config;
-    private final DatabaseDAO database;
+    private final DatabaseDAO databaseDAO;
     private final Collection<Table> tables;
+    private final JsonExporter json;
 
     /**
      * Constructs a new {@link Database} and loads the table metadata from the database.
@@ -25,8 +27,9 @@ public final class Database {
      */
     public Database(Config config) {
         this.config = config;
-        this.database = new DatabaseDAO(config);
-        this.tables = this.database.getTables();
+        this.databaseDAO = new DatabaseDAO(config);
+        this.tables = this.databaseDAO.getTables();
+        this.json = new JsonExporter();
     }
 
     /**
@@ -62,37 +65,10 @@ public final class Database {
      */
     public void exportQueryResult(OutputStream stream) throws IOException {
 
-        List<Object[]> queryResultWithHeader = database.getQueryResultWithHeader();
+        List<Object[]> queryResultWithHeader = databaseDAO.getQueryResultWithHeader();
 
-        // FIXME KW: combine with Table.export
         try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
-            Object[] header = queryResultWithHeader.get(0);
-
-            writer.beginObject();
-            writer.name(config.query);
-
-            writer.beginArray();
-
-            for (int row = 1; row < queryResultWithHeader.size(); row++) {
-                writer.beginObject();
-                Object[] rowData = queryResultWithHeader.get(row);
-                for (int column = 0; column < rowData.length; column++) {
-                    Object columnValue = rowData[column];
-                    if (columnValue == null) {
-                        writer.name((String) header[column]).nullValue();
-                    } else if (columnValue instanceof String) {
-                        writer.name((String) header[column]).value((String) columnValue);
-                    } else if (columnValue instanceof Number) {
-                        writer.name((String) header[column]).value((Number) columnValue);
-                    } else {
-                        throw new IllegalArgumentException("Unknown type: " + columnValue.getClass());
-                    }
-                }
-                writer.endObject();
-            }
-
-            writer.endArray();
-            writer.endObject();
+            json.writeList(writer, queryResultWithHeader, config.query);
         }
     }
 
