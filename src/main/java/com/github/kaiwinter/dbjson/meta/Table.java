@@ -1,7 +1,6 @@
 package com.github.kaiwinter.dbjson.meta;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.github.kaiwinter.dbjson.database.DatabaseDAO;
 import com.github.kaiwinter.dbjson.database.QueryResult;
@@ -18,10 +17,6 @@ public final class Table {
         this.databaseDAO = databaseDAO;
         this.tablename = tablename;
         this.json = new JsonExporter();
-    }
-
-    public List<String> getColumnLabels() {
-        return databaseDAO.getColumnLabels(tablename);
     }
 
     /**

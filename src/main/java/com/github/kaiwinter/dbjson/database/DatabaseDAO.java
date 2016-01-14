@@ -52,24 +52,6 @@ public final class DatabaseDAO {
         }
     }
 
-    public List<String> getColumnLabels(String tablename) {
-        List<String> columns = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(config.connectionString, config.user, config.password);
-                ResultSet resultColumns = connection.getMetaData().getColumns(null, null, tablename, null)) {
-
-            while (resultColumns.next()) {
-                System.out.println();
-                String columnname = resultColumns.getString("COLUMN_NAME");
-                columns.add(columnname);
-            }
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
-
-        return columns;
-    }
-
     /**
      * @return all rows from the table
      */

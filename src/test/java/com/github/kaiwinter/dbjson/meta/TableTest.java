@@ -88,15 +88,4 @@ public final class TableTest {
                 "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
                 stringWriter.getBuffer().toString());
     }
-
-    @Test
-    public void testSqliteMetadataTableColumns() {
-        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config.json"));
-        Database metadata = new Database(config);
-        Table table = metadata.getTable("user");
-
-        List<String> columnNames = table.getColumnLabels();
-        Assert.assertEquals("id", columnNames.get(0));
-        Assert.assertEquals("username", columnNames.get(1));
-    }
 }
