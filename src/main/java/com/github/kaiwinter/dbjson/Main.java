@@ -1,8 +1,10 @@
 package com.github.kaiwinter.dbjson;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.apache.commons.io.IOUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -40,17 +42,20 @@ public final class Main {
         }
 
         // TODO KW: check if query is set in config. If set then export the result query else export all tables
+        OutputStream stream = null;
+        try {
+            if (commandLineArgs.outfile == null) {
+                stream = System.out;
+            } else {
+                stream = new PrintStream(commandLineArgs.outfile);
+            }
 
-        PrintStream stream;
-        if (commandLineArgs.outfile == null) {
-            stream = System.out;
-        } else {
-            stream = new PrintStream(commandLineArgs.outfile);
+            Config config = Config.fromFile(file);
+            Database metadata = new Database(config);
+            metadata.exportAllTables(stream);
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
-
-        Config config = Config.fromFile(file);
-        Database metadata = new Database(config);
-        metadata.exportAllTables(stream);
     }
 
     private static class CommandLineArgs {

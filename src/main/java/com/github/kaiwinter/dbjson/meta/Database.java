@@ -61,11 +61,22 @@ public final class Database {
         return database.getQueryResultWithHeader();
     }
 
-    public void exportAllTables(OutputStream stream) {
+    /**
+     * @see #exportAllTables(OutputStream, boolean)
+     */
+    public void exportAllTables(OutputStream stream) throws IOException {
         exportAllTables(stream, false);
     }
 
-    public void exportAllTables(OutputStream stream, boolean pretty) {
+    /**
+     * Exports all tables into one JSON file. In contrast to {@link Table#exportAllRows(JsonWriter)} this can use a
+     * {@link OutputStream}. Table exports needs to be in a JsonWriter-context to add additional nodes to the JSON.
+     * 
+     * @param stream
+     * @param pretty
+     * @throws IOException
+     */
+    public void exportAllTables(OutputStream stream, boolean pretty) throws IOException {
 
         try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
             writer.beginArray();
@@ -73,9 +84,6 @@ public final class Database {
                 table.exportAllRows(writer, pretty);
             }
             writer.endArray();
-        } catch (IOException e) {
-            // FIXME KW Auto-generated catch block
-            e.printStackTrace();
         }
     }
 }
