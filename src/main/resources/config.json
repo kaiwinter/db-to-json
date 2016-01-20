@@ -1,7 +1,0 @@
-{
-    "jdbcDriver": "org.sqlite.JDBC",
-    "connectionString": "jdbc:sqlite:d:/temp/test.db",
-    "user": "root",
-    "password": "",
-    "query": "SELECT * FROM form"
-}
