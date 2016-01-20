@@ -16,6 +16,7 @@ public final class Config {
     public String user;
     public String password;
     public String query;
+    public Boolean pretty = false; // allow to be not set in config
 
     private Config() {
         // use fromFile

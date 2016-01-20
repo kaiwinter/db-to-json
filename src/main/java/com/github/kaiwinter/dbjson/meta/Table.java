@@ -20,23 +20,13 @@ public final class Table {
     }
 
     /**
-     * Returns all rows from the table.
-     * 
-     * @return
+     * @return all rows from the table.
      */
     public QueryResult getTableData() {
         return databaseDAO.getTableData(tablename);
     }
 
     public void exportAllRows(JsonWriter writer) throws IOException {
-        exportAllRows(writer, false);
-    }
-
-    public void exportAllRows(JsonWriter writer, boolean pretty) throws IOException {
-        if (pretty) {
-            writer.setIndent("    ");
-        }
-
         QueryResult queryResult = getTableData();
         json.writeList(writer, queryResult, tablename);
     }

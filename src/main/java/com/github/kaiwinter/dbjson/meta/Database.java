@@ -58,9 +58,16 @@ public final class Database {
     }
 
     public void exportQueryResult(OutputStream stream) throws IOException {
+        exportQueryResult(stream, false);
+    }
+
+    public void exportQueryResult(OutputStream stream, boolean pretty) throws IOException {
         QueryResult queryResult = databaseDAO.getQueryResult();
 
         try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
+            if (pretty) {
+                writer.setIndent("   ");
+            }
             json.writeList(writer, queryResult, config.query);
         }
     }
@@ -82,9 +89,12 @@ public final class Database {
      */
     public void exportAllTables(OutputStream stream, boolean pretty) throws IOException {
         try (JsonWriter writer = new JsonWriter(new PrintWriter(stream))) {
+            if (pretty) {
+                writer.setIndent("   ");
+            }
             writer.beginArray();
             for (Table table : getTables()) {
-                table.exportAllRows(writer, pretty);
+                table.exportAllRows(writer);
             }
             writer.endArray();
         }

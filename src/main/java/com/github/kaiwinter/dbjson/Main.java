@@ -48,9 +48,9 @@ public final class Main {
         Database metadata = new Database(config);
 
         if (isQuerySetInConfig(config)) {
-            exportQueryResult(metadata, commandLineArgs.outfile);
+            exportQueryResult(metadata, commandLineArgs.outfile, config.pretty);
         } else {
-            exportAllTables(metadata, commandLineArgs.outfile);
+            exportAllTables(metadata, commandLineArgs.outfile, config.pretty);
         }
     }
 
@@ -58,15 +58,15 @@ public final class Main {
         return config.query != null && !config.query.isEmpty();
     }
 
-    private static void exportAllTables(Database metadata, String outfile) throws IOException {
+    private static void exportAllTables(Database metadata, String outfile, boolean pretty) throws IOException {
         try (OutputStream stream = (outfile == null) ? System.out : new PrintStream(outfile)) {
-            metadata.exportAllTables(stream);
+            metadata.exportAllTables(stream, pretty);
         }
     }
 
-    private static void exportQueryResult(Database metadata, String outfile) throws IOException {
+    private static void exportQueryResult(Database metadata, String outfile, boolean pretty) throws IOException {
         try (OutputStream stream = (outfile == null) ? System.out : new PrintStream(outfile)) {
-            metadata.exportQueryResult(stream);
+            metadata.exportQueryResult(stream, pretty);
         }
     }
 
