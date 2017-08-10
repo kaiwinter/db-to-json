@@ -26,7 +26,8 @@ id  | username
 	    "user": "root",
 	    "password": "",
 	    "query": "SELECT id, username FROM user",
-	    "pretty": true
+	    "pretty": true,
+	    "underscoreToCamelcase": true
 	}
 	
 ### Result
@@ -71,3 +72,7 @@ To export all tables at once leave the query empty:
 	      ]
 	   }
 	]
+	
+### Run
+
+Main -config config.json [-outfile dump.json]

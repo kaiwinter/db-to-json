@@ -41,7 +41,7 @@ public final class MainTest {
                 new String[]{"-config", "target/test-classes/com/github/kaiwinter/dbjson/meta/sqlite/config-noquery.json"});
 
         Assert.assertEquals(
-                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
+                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address_home\":\"Address A\"},{\"id\":2,\"address_home\":\"Address B\"}]}]",
                 systemOutRule.getLog());
     }
 }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.kaiwinter.dbjson.config.Config;
 import com.github.kaiwinter.dbjson.meta.Table;
+import com.google.common.base.CaseFormat;
 
 public final class DatabaseDAO {
 
@@ -79,7 +80,12 @@ public final class DatabaseDAO {
             int columnCount = resultSet.getMetaData().getColumnCount();
             for (int i = 0; i < columnCount; i++) {
                 String columnLabel = resultSet.getMetaData().getColumnLabel(i + 1);
-                queryResult.columnLabels.add(columnLabel);
+                if (config.underscoreToCamelcase) {
+                    columnLabel = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, columnLabel);
+                    queryResult.columnLabels.add(columnLabel);
+                } else {
+                    queryResult.columnLabels.add(columnLabel);
+                }
             }
 
             while (resultSet.next()) {

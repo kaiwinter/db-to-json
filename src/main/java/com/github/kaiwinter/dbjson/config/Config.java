@@ -17,6 +17,7 @@ public final class Config {
     public String password;
     public String query;
     public Boolean pretty = false; // allow to be not set in config
+    public Boolean underscoreToCamelcase = false;
 
     private Config() {
         // use fromFile

@@ -65,7 +65,8 @@ public final class TableTest {
             table.exportAllRows(writer);
         }
 
-        Assert.assertEquals("{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}",
+        Assert.assertEquals(
+                "{\"invoice\":[{\"id\":1,\"address_home\":\"Address A\"},{\"id\":2,\"address_home\":\"Address B\"}]}",
                 stringWriter.getBuffer().toString());
     }
 
@@ -85,7 +86,24 @@ public final class TableTest {
         }
 
         Assert.assertEquals(
-                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
+                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address_home\":\"Address A\"},{\"id\":2,\"address_home\":\"Address B\"}]}]",
                 stringWriter.getBuffer().toString());
     }
+
+    @Test
+    public void testSqliteWriteUnderscoreToCamelCase() throws IOException {
+        Config config = Config.fromFile(TableTest.class.getResourceAsStream("sqlite/config-camelcase.json"));
+        Database metadata = new Database(config);
+        Table table = metadata.getTable("invoice");
+
+        StringWriter stringWriter = new StringWriter();
+        try (JsonWriter writer = new JsonWriter(stringWriter)) {
+            table.exportAllRows(writer);
+        }
+
+        Assert.assertEquals(
+                "{\"invoice\":[{\"id\":1,\"addressHome\":\"Address A\"},{\"id\":2,\"addressHome\":\"Address B\"}]}",
+                stringWriter.getBuffer().toString());
+    }
+
 }

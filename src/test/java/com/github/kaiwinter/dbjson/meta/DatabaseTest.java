@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.kaiwinter.dbjson.config.Config;
-import com.github.kaiwinter.dbjson.meta.Database;
 
 public final class DatabaseTest {
 
@@ -20,7 +19,7 @@ public final class DatabaseTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         metadata.exportAllTables(stream);
         Assert.assertEquals(
-                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address\":\"Address A\"},{\"id\":2,\"address\":\"Address B\"}]}]",
+                "[{\"user\":[{\"id\":1,\"username\":\"User A\"},{\"id\":2,\"username\":\"User B\"}]},{\"invoice\":[{\"id\":1,\"address_home\":\"Address A\"},{\"id\":2,\"address_home\":\"Address B\"}]}]",
                 stream.toString());
     }
 
